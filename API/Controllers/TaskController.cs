@@ -38,10 +38,33 @@ namespace API.Controllers
             return Ok(task);
         }
 
-        // [HttpPut("updatetask")]
-        // public async Task<ActionResult<TodoTask>> UpdateTask()
-        // {
+        [HttpPut("updateTask")]
+        public async Task<ActionResult<TodoTask>> UpdateTask(TodoTask task)
+        {
+            var updatedTask = await _context.Tasks.FindAsync(task.Id);
+            if(updatedTask == null)
+            {
+                return BadRequest();
+            }
+
+            updatedTask.Name = task.Name;
+            updatedTask.Description = task.Description;
             
-        // }
+            await _context.SaveChangesAsync();
+
+            return updatedTask;
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteTask(int id)
+        {
+            var task = await _context.Tasks.FindAsync(id);
+            if (task == null) {
+                return BadRequest();
+            }
+            _context.Tasks.Remove(task);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
     }
 }
